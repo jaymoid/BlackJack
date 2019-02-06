@@ -22,3 +22,10 @@ If the dealer score = player score, and this score < 17, the dealer has to hit a
 If the dealer score = player score, and the score is >= 17, then the game is a draw 
 
 If the player score < dealer score, the dealer stands and wins
+
+## My implementation details
+* Kotlin
+* No mutable variables (vars)
+* No mutatable state/collections
+* TDD all the things
+* Functional core / functional shell 
