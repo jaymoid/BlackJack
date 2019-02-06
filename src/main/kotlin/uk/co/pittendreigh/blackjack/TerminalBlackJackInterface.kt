@@ -5,6 +5,7 @@ import java.io.PrintStream
 import uk.co.pittendreigh.blackjack.GameFinish.*
 import uk.co.pittendreigh.blackjack.Rank.*
 import uk.co.pittendreigh.blackjack.Suit.*
+import uk.co.pittendreigh.blackjack.TerminalBlackJackInterface.StickOrTwist.*
 
 class TerminalBlackJackInterface(
     val blackJackGame: BlackJackGame,
@@ -29,8 +30,8 @@ class TerminalBlackJackInterface(
         printCards(game)
         printHandScore(game)
         return when (promptStickOrTwist()) {
-            StickOrTwist.STICK -> blackJackGame.stick(game)
-            StickOrTwist.TWIST -> blackJackGame.twist(game)
+            STICK -> blackJackGame.stick(game)
+            TWIST -> blackJackGame.twist(game)
         }
     }
 
@@ -57,8 +58,8 @@ class TerminalBlackJackInterface(
         output.println("[S]tick or [T]wist?:")
         val answer = bufferedInput.readLine()?.toLowerCase()
         return when {
-            (answer == "stick" || answer == "s") -> StickOrTwist.STICK
-            (answer == "twist" || answer == "t") -> StickOrTwist.TWIST
+            (answer == "stick" || answer == "s") -> STICK
+            (answer == "twist" || answer == "t") -> TWIST
             else -> promptStickOrTwist()
         }
     }
@@ -100,19 +101,17 @@ private fun Suit.symbol() =
 
 private fun Rank.shortName() =
     when (this) {
-    ACE -> "A"
-    TWO -> "2"
-    THREE -> "3"
-    FOUR -> "4"
-    FIVE -> "5"
-    SIX -> "6"
-    SEVEN -> "7"
-    EIGHT -> "8"
-    NINE -> "9"
-    TEN -> "10"
-    JACK -> "J"
-    QUEEN -> "Q"
-    KING -> "K"
-}
-
-
+        ACE -> "A"
+        TWO -> "2"
+        THREE -> "3"
+        FOUR -> "4"
+        FIVE -> "5"
+        SIX -> "6"
+        SEVEN -> "7"
+        EIGHT -> "8"
+        NINE -> "9"
+        TEN -> "10"
+        JACK -> "J"
+        QUEEN -> "Q"
+        KING -> "K"
+    }

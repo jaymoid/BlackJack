@@ -48,5 +48,4 @@ class CardDeckTest {
             Assertions.assertTrue(shuffledCards != unshuffledCards)
         }
     }
-
 }

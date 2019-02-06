@@ -26,6 +26,6 @@ If the player score < dealer score, the dealer stands and wins
 ## My implementation details
 * Kotlin
 * No mutable variables (vars)
-* No mutatable state/collections
+* No mutable state/collections
 * TDD all the things
 * Functional core / functional shell 

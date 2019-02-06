@@ -25,7 +25,7 @@ data class CardsState(val playerHand: List<Card>, val dealerHand: List<Card>, va
 private sealed class BlackJackResult
 private object BlackJack : BlackJackResult()
 private object Bust : BlackJackResult()
-private  data class EqualTo21OrLower(val possibleScores: Set<Int>) : BlackJackResult()
+private data class EqualTo21OrLower(val possibleScores: Set<Int>) : BlackJackResult()
 
 class BlackJackGame(
     val cardProviderFunction: () -> List<Card>,
@@ -132,3 +132,4 @@ class BlackJackGame(
             TEN, JACK, QUEEN, KING -> 10
         }
 }
+

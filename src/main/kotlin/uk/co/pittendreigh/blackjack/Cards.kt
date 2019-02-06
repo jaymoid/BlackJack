@@ -19,8 +19,8 @@ enum class Suit {
     HEARTS,
     SPADES,
     DIAMONDS,
-
 }
+
 enum class Rank {
     ACE,
     TWO,
@@ -35,5 +35,4 @@ enum class Rank {
     JACK,
     QUEEN,
     KING
-
 }

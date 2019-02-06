@@ -39,7 +39,6 @@ private fun createCardState(
 private fun typeInput(vararg inputCommands: String) =
     inputCommands.joinToString(separator = lineSeparator())
 
-
 class TerminalBlackJackInterfaceTest {
 
     private val outputStream = ByteArrayOutputStream()
@@ -150,7 +149,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame()
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("You win with blackjack!")
         }
 
@@ -160,7 +159,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame()
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("DRAW! You and the dealer got blackjack.")
         }
 
@@ -175,7 +174,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("twist", "stick"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("The dealer wins with blackjack.")
         }
 
@@ -203,7 +202,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("twist", "stick"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("You win!")
         }
 
@@ -213,7 +212,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("twist"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("You went bust!")
         }
 
@@ -223,7 +222,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("stick"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("The dealer went bust!")
         }
 
@@ -233,7 +232,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("stick"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("The dealer wins!")
         }
 
@@ -243,7 +242,7 @@ class TerminalBlackJackInterfaceTest {
 
             startGame(typeInput("stick"))
 
-            val outputLines = outputStream.toString().lines().filterNot { it == ""}
+            val outputLines = outputStream.toString().lines().filterNot { it == "" }
             assertThat(outputLines.last()).contains("It's a draw!")
         }
     }
@@ -267,17 +266,19 @@ class TerminalBlackJackInterfaceTest {
 
         startGame(typeInput("stick"))
 
-        val outputLines = outputStream.toString().lines().filter { it != ""}
+        val outputLines = outputStream.toString().lines().filter { it != "" }
         assertThat(outputLines.last()).contains("... Would you like to play again? [y/n]:")
     }
 
     @ParameterizedTest
     @EnumSource(GameFinish::class)
     fun `Given the user wants to play again, when the game ends, then new cards are dealt`(gameFinish: GameFinish) {
-        val nextHand = PlayerHas21OrLower(createCardState(
-            playerHand = hand(QUEEN of SPADES, SEVEN of CLUBS),
-            dealerHand = hand(JACK of DIAMONDS, TWO of HEARTS )
-        ), setOf(17))
+        val nextHand = PlayerHas21OrLower(
+            createCardState(
+                playerHand = hand(QUEEN of SPADES, SEVEN of CLUBS),
+                dealerHand = hand(JACK of DIAMONDS, TWO of HEARTS)
+            ), setOf(17)
+        )
         every { blackJackGame.deal() } returnsMany listOf(playerHaslessThan21, nextHand)
         every { blackJackGame.stick(playerHaslessThan21) } returns GameOver(createCardState(), gameFinish)
 
@@ -288,5 +289,4 @@ class TerminalBlackJackInterfaceTest {
         assertThat(outputLines).contains("Your Cards:   [Q ♤] [7 ♧]")
         assertThat(outputLines).contains("Your hand is worth: 17")
     }
-
 }
