@@ -29,3 +29,4 @@ If the player score < dealer score, the dealer stands and wins
 * No mutable state/collections
 * TDD all the things
 * Functional core / functional shell 
+* Derive meaning through types and type signatures
