@@ -20,7 +20,11 @@ enum class GameFinish {
     DrawGame
 }
 
-data class CardsState(val playerHand: List<Card>, val dealerHand: List<Card>, val deck: List<Card>)
+data class CardsState(
+    val playerHand: List<Card> = emptyList(),
+    val dealerHand: List<Card> = emptyList(),
+    val deck: List<Card> = emptyList()
+)
 
 private sealed class BlackJackResult
 private object BlackJack : BlackJackResult()
@@ -32,16 +36,19 @@ class BlackJackGame(
     val cardShufflerFunction: (List<Card>) -> List<Card>
 ) {
 
-    fun deal(): BlackJackGameState =
-        cardShufflerFunction(cardProviderFunction()).let { deck ->
-            getNewGameState(
-                CardsState(
-                    playerHand = listOf(deck.get(0), deck.get(2)),
-                    dealerHand = listOf(deck.get(1), deck.get(3)),
-                    deck = deck.drop(4)
-                )
-            )
+    fun deal(): BlackJackGameState {
+        val shuffledCards = cardShufflerFunction(cardProviderFunction())
+        val startingCardState = shuffledCards.fold(CardsState()) { cardState, nextCard ->
+            with(cardState) {
+                when {
+                    playerHand.size == 2 && dealerHand.size == 2 -> copy(deck = cardState.deck + nextCard)
+                    playerHand.size == dealerHand.size -> copy(playerHand = cardState.playerHand + nextCard)
+                    else -> copy(dealerHand = cardState.dealerHand + nextCard)
+                }
+            }
         }
+        return getNewGameState(startingCardState)
+    }
 
     fun twist(gameState: PlayerHas21OrLower): BlackJackGameState =
         getNewGameState(

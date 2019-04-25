@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
+import org.junit.jupiter.api.assertAll
 import uk.co.pittendreigh.blackjack.GameFinish.*
 import uk.co.pittendreigh.blackjack.Rank.*
 import uk.co.pittendreigh.blackjack.Suit.*
@@ -45,27 +46,29 @@ class `BlackJackGame - Deal functionality` {
             val shuffledGame = BlackJackGame(cardProviderFunction, cardShufflerFunction)
             val gameState = shuffledGame.deal()
 
-            assertEquals(listOf(ACE of HEARTS), gameState.state.deck)
-            assertEquals(listOf(JACK of DIAMONDS, ACE of CLUBS), gameState.state.playerHand)
-            assertEquals(listOf(TWO of CLUBS, TWO of HEARTS), gameState.state.dealerHand)
+            assertAll(
+                { assertEquals(listOf(ACE of HEARTS), gameState.state.deck) },
+                { assertEquals(listOf(JACK of DIAMONDS, ACE of CLUBS), gameState.state.playerHand) },
+                { assertEquals(listOf(TWO of CLUBS, TWO of HEARTS), gameState.state.dealerHand) }
+            )
         }
 
         @Test
         fun `then the player has the first card, and the third card`() {
             val gameState = game.deal()
-            assertTrue(gameState.state.playerHand == listOf(ACE of HEARTS, ACE of CLUBS))
+            assertThat(gameState.state.playerHand).containsOnly(ACE of HEARTS, ACE of CLUBS)
         }
 
         @Test
         fun `then the dealer has the second and fourth card`() {
             val gameState = game.deal()
-            assertTrue(gameState.state.dealerHand == listOf(TWO of HEARTS, TWO of CLUBS))
+            assertThat(gameState.state.dealerHand).containsOnly(TWO of HEARTS, TWO of CLUBS)
         }
 
         @Test
         fun `then the dealer and player cards are no longer in the deck`() {
             val gameState = game.deal()
-            assertTrue(gameState.state.deck == listOf(JACK of DIAMONDS))
+            assertThat(gameState.state.deck).containsOnly(JACK of DIAMONDS)
         }
     }
 
@@ -90,8 +93,10 @@ class `BlackJackGame - Deal functionality` {
                     every { cardProviderFunction() } returns createPreparedDeckOf(playerHand = hand)
                     val gameState = game.deal()
 
-                    assertTrue(gameState is PlayerHas21OrLower)
-                    assertEquals(expectedScores, (gameState as PlayerHas21OrLower).possibleScores)
+                    assertAll(
+                        { assertTrue(gameState is PlayerHas21OrLower) },
+                        { assertEquals(expectedScores, (gameState as PlayerHas21OrLower).possibleScores) }
+                    )
                 }
             }
     }
@@ -104,7 +109,6 @@ class `BlackJackGame - Deal functionality` {
         playerHand.zip(dealerHand)
             .flatMap { (playerCard, dealerCard) -> listOf(playerCard, dealerCard) }
             .plus(remainingDeckCards)
-
 
     @Nested
     inner class `given the player has blackjack hand but dealer does not, when starting deal is performed` {
@@ -127,8 +131,10 @@ class `BlackJackGame - Deal functionality` {
                     )
                     val gameState = game.deal()
 
-                    assertTrue(gameState is GameOver)
-                    assertTrue((gameState as GameOver).result == PlayerIsBlackJack)
+                    assertAll(
+                        { assertTrue(gameState is GameOver) },
+                        { assertTrue((gameState as GameOver).result == PlayerIsBlackJack) }
+                    )
                 }
             }
     }
@@ -162,7 +168,6 @@ class `BlackJackGame - Deal functionality` {
                         } returns createPreparedDeckOf(playerBlackJackHand, dealerBlackJackHand)
 
                         val gameState = game.deal()
-
 
                         assertEquals(PlayerAndDealerBlackJack, (gameState as GameOver).result)
                     }
@@ -258,10 +263,14 @@ class `BlackJackGame - Twist functionality` {
 
                     val stateAfterTwist = game.twist(priorGameState)
 
-                    assertTrue(stateAfterTwist is PlayerHas21OrLower)
-                    assertEquals(
-                        setOf(expectedHandValue),
-                        (stateAfterTwist as PlayerHas21OrLower).possibleScores
+                    assertAll(
+                        { assertTrue(stateAfterTwist is PlayerHas21OrLower) },
+                        {
+                            assertEquals(
+                                setOf(expectedHandValue),
+                                (stateAfterTwist as PlayerHas21OrLower).possibleScores
+                            )
+                        }
                     )
                 }
             }
@@ -366,8 +375,10 @@ class `BlackJackGame - Stick functionality` {
 
             val stateAfterStick = game.stick(priorGameState)
 
-            assertEquals(DealerIsBust, stateAfterStick.result)
-            assertThat(stateAfterStick.state.dealerHand).contains(TEN of DIAMONDS)
+            assertAll(
+                { assertEquals(DealerIsBust, stateAfterStick.result) },
+                { assertThat(stateAfterStick.state.dealerHand).contains(TEN of DIAMONDS) }
+            )
         }
     }
 
@@ -386,9 +397,10 @@ class `BlackJackGame - Stick functionality` {
             )
 
             val stateAfterStick = game.stick(priorGameState)
-
-            assertEquals(DealerWins, stateAfterStick.result)
-            assertThat(stateAfterStick.state.dealerHand).contains(FOUR of DIAMONDS)
+            assertAll(
+                { assertEquals(DealerIsBust, stateAfterStick.result) },
+                { assertThat(stateAfterStick.state.dealerHand).contains(FIVE of DIAMONDS) }
+            )
         }
     }
 
@@ -408,8 +420,10 @@ class `BlackJackGame - Stick functionality` {
 
             val stateAfterStick = game.stick(priorGameState)
 
-            assertEquals(DrawGame, stateAfterStick.result)
-            assertThat(stateAfterStick.state.dealerHand).contains(FOUR of DIAMONDS)
+            assertAll(
+                { assertEquals(DrawGame, stateAfterStick.result) },
+                { assertThat(stateAfterStick.state.dealerHand).contains(FOUR of DIAMONDS) }
+            )
         }
     }
 }
