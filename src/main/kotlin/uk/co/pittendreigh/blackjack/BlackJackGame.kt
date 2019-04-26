@@ -20,7 +20,11 @@ enum class GameFinish {
     DrawGame
 }
 
-data class CardsState(val playerHand: List<Card>, val dealerHand: List<Card>, val deck: List<Card>)
+data class CardsState(
+    val playerHand: List<Card> = emptyList(),
+    val dealerHand: List<Card> = emptyList(),
+    val deck: List<Card> = emptyList()
+)
 
 private sealed class BlackJackResult
 private object BlackJack : BlackJackResult()
@@ -28,29 +32,38 @@ private object Bust : BlackJackResult()
 private data class EqualTo21OrLower(val possibleScores: Set<Int>) : BlackJackResult()
 
 class BlackJackGame(
-    val cardProviderFunction: () -> List<Card>,
-    val cardShufflerFunction: (List<Card>) -> List<Card>
+    val createDeckOfCards: () -> List<Card>,
+    val shufffleCards: List<Card>.() -> List<Card>
 ) {
 
     fun deal(): BlackJackGameState =
-        cardShufflerFunction(cardProviderFunction()).let { deck ->
-            getNewGameState(
-                CardsState(
-                    playerHand = listOf(deck.get(0), deck.get(2)),
-                    dealerHand = listOf(deck.get(1), deck.get(3)),
-                    deck = deck.drop(4)
-                )
-            )
+        getNewGameState(
+            createDeckOfCards()
+                .shufffleCards()
+                .dealFirstHand()
+        )
+
+    private fun List<Card>.dealFirstHand(): CardsState =
+        fold(CardsState()) { cardState, nextCard ->
+            with(cardState) {
+                when {
+                    playerHand.size == 2 && dealerHand.size == 2 -> copy(deck = cardState.deck + nextCard)
+                    playerHand.size == dealerHand.size -> copy(playerHand = cardState.playerHand + nextCard)
+                    else -> copy(dealerHand = cardState.dealerHand + nextCard)
+                }
+            }
         }
 
     fun twist(gameState: PlayerHas21OrLower): BlackJackGameState =
-        getNewGameState(
-            CardsState(
-                playerHand = gameState.state.playerHand + gameState.state.deck.get(0),
-                dealerHand = gameState.state.dealerHand,
-                deck = gameState.state.deck.drop(1)
+        gameState.state.deck.firstOrNull()?.let { newCard ->
+            getNewGameState(
+                CardsState(
+                    playerHand = gameState.state.playerHand + newCard,
+                    dealerHand = gameState.state.dealerHand,
+                    deck = gameState.state.deck - newCard
+                )
             )
-        )
+        } ?: gameState
 
     private fun getNewGameState(cardState: CardsState): BlackJackGameState {
         val playerHandValue = calculateHandValue(cardState.playerHand)
@@ -84,11 +97,13 @@ class BlackJackGame(
     }
 
     private fun dealerTakesDeckCard(state: CardsState): CardsState =
-        CardsState(
-            playerHand = state.playerHand,
-            dealerHand = state.dealerHand + state.deck.first(),
-            deck = state.deck.drop(1)
-        )
+        state.deck.firstOrNull()?.let { newCard ->
+            CardsState(
+                playerHand = state.playerHand,
+                dealerHand = state.dealerHand + newCard,
+                deck = state.deck - newCard
+            )
+        } ?: state
 
     private fun calculateHandValue(hand: List<Card>): BlackJackResult {
         val scores = calculatePossibleValues(hand)

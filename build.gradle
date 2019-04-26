@@ -9,21 +9,27 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8')
-
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.2')
-    testCompile('org.junit.jupiter:junit-jupiter-api:5.3.2')
-    testCompile('org.junit.jupiter:junit-jupiter-params:5.3.2')
-    testCompile("org.assertj:assertj-core:3.11.1")
-    testImplementation('io.mockk:mockk:1.9')
-}
-
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines "jqwik"
+    }
     testLogging {
         events "passed", "skipped", "failed"
     }
+    include '**/*Properties.class'
+    include '**/*Test.class'
+    include '**/*Tests.class'
+}
+
+dependencies {
+    implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8')
+
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
+    testCompile('org.junit.jupiter:junit-jupiter-api:5.4.0')
+    testCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
+    testCompile('org.assertj:assertj-core:3.11.1')
+    testCompile('net.jqwik:jqwik:1.1.0')
+    testImplementation('io.mockk:mockk:1.9')
 }
 
 compileKotlin {

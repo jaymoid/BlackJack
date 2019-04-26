@@ -35,7 +35,7 @@ class CardDeckTest {
     inner class `given unshuffled cards, when they are shuffled` {
 
         private val unshuffledCards = createDeckOfCards()
-        private val shuffledCards = shuffleCards(unshuffledCards)
+        private val shuffledCards = unshuffledCards.shuffleCards()
 
         @Test
         fun `then the list of shuffled cards contain all of the provided unshuffled cards`() {
@@ -49,3 +49,4 @@ class CardDeckTest {
         }
     }
 }
+

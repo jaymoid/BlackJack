@@ -11,7 +11,7 @@ data class Card(val rank: Rank, val suit: Suit) {
     override fun toString() = "[$rank of $suit]"
 }
 
-fun shuffleCards(unShuffled: Iterable<Card>): List<Card> = unShuffled.shuffled()
+fun Iterable<Card>.shuffleCards(): List<Card> = shuffled()
 
 infix fun Rank.of(suit: Suit): Card = Card(this, suit)
 enum class Suit {
