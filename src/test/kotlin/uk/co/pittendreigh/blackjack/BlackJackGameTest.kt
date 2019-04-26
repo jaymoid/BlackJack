@@ -17,9 +17,9 @@ import uk.co.pittendreigh.blackjack.Rank.*
 import uk.co.pittendreigh.blackjack.Suit.*
 
 private val cardProviderFunction: () -> List<Card> = mockk()
-private val cardShufflerFunction: (List<Card>) -> List<Card> = { it }
+private val cardShufflerExtFunction: Iterable<Card>.() -> List<Card> = { this.toList() }
 
-private val game = BlackJackGame(cardProviderFunction, cardShufflerFunction)
+private val game = BlackJackGame(cardProviderFunction, cardShufflerExtFunction)
 
 class `BlackJackGame - Deal functionality` {
 
@@ -41,7 +41,7 @@ class `BlackJackGame - Deal functionality` {
 
         @Test
         fun `then the cards from the provider are shuffled`() {
-            val cardShufflerFunction: (List<Card>) -> List<Card> = { cards -> cards.reversed() }
+            val cardShufflerFunction:  List<Card>.() -> List<Card> = { reversed() }
 
             val shuffledGame = BlackJackGame(cardProviderFunction, cardShufflerFunction)
             val gameState = shuffledGame.deal()
@@ -398,8 +398,8 @@ class `BlackJackGame - Stick functionality` {
 
             val stateAfterStick = game.stick(priorGameState)
             assertAll(
-                { assertEquals(DealerIsBust, stateAfterStick.result) },
-                { assertThat(stateAfterStick.state.dealerHand).contains(FIVE of DIAMONDS) }
+                { assertEquals(DealerWins, stateAfterStick.result) },
+                { assertThat(stateAfterStick.state.dealerHand).contains(FOUR of DIAMONDS) }
             )
         }
     }
@@ -425,5 +425,38 @@ class `BlackJackGame - Stick functionality` {
                 { assertThat(stateAfterStick.state.dealerHand).contains(FOUR of DIAMONDS) }
             )
         }
+    }
+
+    @Test
+    internal fun spikeFold() {
+        val startList = (1..5).toList()
+
+        val foldl = startList.fold("0", { acc: String, i: Int -> "($acc+$i)" })
+        println("left associative fold: $foldl")
+
+        val foldr = startList.foldRight("0", { i: Int, acc: String -> "($i+$acc)" })
+        println("right associative fold: $foldr")
+
+
+        val bigList = (1..10_000).toList()
+        var executedL = 0
+        val bigFoldl = bigList.fold("0", { _: String, i: Int ->
+            executedL++
+            i.toString()
+        })
+        println("left associative big fold: $bigFoldl, function was executed: $executedL")
+
+        var executedR = 0
+        val bigFoldR = bigList.foldRight("0", { i: Int, _: String ->
+                executedR++
+                i.toString()
+        })
+        println("right associative big fold: $bigFoldR, function was executed: $executedR")
+
+    }
+
+    @Test
+    internal fun spike() {
+        emptyList<String>().drop(1)
     }
 }
