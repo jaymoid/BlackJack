@@ -30,3 +30,4 @@ If the player score < dealer score, the dealer stands and wins
 * TDD all the things
 * Functional core / functional shell 
 * Derive meaning through types and type signatures
+* No functions that blow up at runtime (e.g. list.first() on an empty list)
